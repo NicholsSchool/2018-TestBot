@@ -14,13 +14,13 @@ package org.usfirst.frc.team4930.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4930.robot.commands.*;
 import org.usfirst.frc.team4930.robot.subsystems.*;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -107,19 +107,15 @@ public class Robot extends TimedRobot {
         
         SmartDashboard.putNumber("Encoder Position: ", RobotMap.talonMaster.getSelectedSensorPosition(0));
         SmartDashboard.putNumber("Encoder Velocity: ", RobotMap.talonMaster.getSelectedSensorVelocity(0));
-        SmartDashboard.putString("Talon Control Mode: ", RobotMap.talonMaster.getControlMode().toString());
-//        if(RobotMap.talonMaster.getControlMode() != ControlMode.PercentOutput) {
-            SmartDashboard.putNumber("Closed-Loop Error: ", RobotMap.talonMaster.getClosedLoopError(0));
-//            SmartDashboard.putNumber("Closed-Loop Target: ", RobotMap.talonMaster.getClosedLoopTarget(0));
-//        }
-        SmartDashboard.putString("Victor Control Mode: ", RobotMap.victorSlave.getControlMode().toString());
-//        SmartDashboard.putBoolean("Talon isAlive: ", RobotMap.talonMaster.isAlive());
-//        SmartDashboard.putBoolean("Victor isAlive: ", RobotMap.victorSlave.isAlive());
-        SmartDashboard.putNumber("Joystick0 Y: ", Robot.oi.getJoystick0().getY());
-        SmartDashboard.putNumber("Victor Error: ", RobotMap.victorSlave.getClosedLoopError(0));
         
-        System.out.println("Position: " + RobotMap.talonMaster.getSelectedSensorPosition(0));
-//        SmartDashboard.putNumber("Other encoder: ", RobotMap.quadEncoder.get());
-//        SmartDashboard.putBoolean("Encoder is stopped: ", RobotMap.quadEncoder.getStopped());
+        SmartDashboard.putString("Talon Control Mode: ", RobotMap.talonMaster.getControlMode().toString());
+        SmartDashboard.putString("Victor Control Mode: ", RobotMap.victorSlave.getControlMode().toString());
+        
+        if(RobotMap.talonMaster.getControlMode() != ControlMode.PercentOutput) {
+        	SmartDashboard.putNumber("PID Error: ", RobotMap.talonMaster.getClosedLoopError(0));
+            SmartDashboard.putNumber("PID Target: ", RobotMap.talonMaster.getClosedLoopTarget(0));
+        }
+        
+        SmartDashboard.putNumber("Joystick0 Y: ", Robot.oi.getJoystick0().getY());
     }
 }
