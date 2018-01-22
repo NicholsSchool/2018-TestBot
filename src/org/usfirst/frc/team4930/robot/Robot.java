@@ -36,6 +36,7 @@ public class Robot extends TimedRobot {
 
     public static OI oi;
     public static Motors motors;
+    public static LimitSwitch lSwitch;
     
     public static double positionGoal;
     public static double velocityGoal;
