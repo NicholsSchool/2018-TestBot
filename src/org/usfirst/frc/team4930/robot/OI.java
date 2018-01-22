@@ -78,7 +78,6 @@ public class OI {
         joystick0button4.whenPressed(new StartVelocityLoop(0.0));
         
         joystick0button5.whenPressed(new StartPositionLoop(10000.0));
-        
         joystick0button6.whenPressed(new StartPositionLoop(0.0));
         
 
