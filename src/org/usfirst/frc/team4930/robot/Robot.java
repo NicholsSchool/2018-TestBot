@@ -139,7 +139,7 @@ public class Robot extends TimedRobot
         RobotMap.talonMaster.getMotorOutputVoltage());
     SmartDashboard.putNumber("Victor Motor Voltage:  ",
         RobotMap.victorSlave.getMotorOutputVoltage());
-    SmartDashboard.putNumber("Voltage Difference:  ", RobotMap.talonMaster.getMotorOutputVoltage()
+    SmartDashboard.putNumber("Victor Voltage Difference:  ", RobotMap.talonMaster.getMotorOutputVoltage()
         - RobotMap.victorSlave.getMotorOutputVoltage());
     double diff =
         RobotMap.talonMaster.getMotorOutputVoltage() - RobotMap.victorSlave.getMotorOutputVoltage();
@@ -150,6 +150,9 @@ public class Robot extends TimedRobot
     } else {
       SmartDashboard.putString("Higher Voltage:  ", "Equal");
     }
+    
+    SmartDashboard.putNumber("Talon Voltage Difference:  ", RobotMap.talonMaster.getMotorOutputVoltage()
+            - RobotMap.talonSlave.getMotorOutputVoltage());
 
     SmartDashboard.putBoolean("Limit Switch:  ", RobotMap.limitSwitch.get());
     SmartDashboard.putNumber("Pot:  ", RobotMap.pot.get());

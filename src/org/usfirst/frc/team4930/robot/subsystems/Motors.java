@@ -58,7 +58,8 @@ public class Motors extends Subsystem {
     
     public void set(double speed) {
     	RobotMap.talonMaster.set(speed * 1.02);
-    	RobotMap.victorSlave.set(speed);
+//    	RobotMap.victorSlave.set(speed);
+//    	RobotMap.talonSlave.set(speed);
     }
     
     public void setVelocity(double velocity) {

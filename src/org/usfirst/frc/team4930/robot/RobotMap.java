@@ -22,6 +22,7 @@ public class RobotMap {
     
     public static WPI_TalonSRX talonMaster;
     public static WPI_VictorSPX victorSlave;
+    public static WPI_TalonSRX talonSlave;
     
     public static DigitalInput limitSwitch;
     public static AnalogPotentiometer pot;
@@ -41,6 +42,10 @@ public class RobotMap {
         // must use .follow() instead of .set(ControlMode.Follow) for Talon-Victor control
         victorSlave.follow(talonMaster);
         victorSlave.setNeutralMode(NeutralMode.Brake);
+        
+        talonSlave = new WPI_TalonSRX(23);
+        talonSlave.follow(talonMaster);
+        talonSlave.setNeutralMode(NeutralMode.Brake);
         
         limitSwitch = new DigitalInput(9);
         pot = new AnalogPotentiometer(0);
