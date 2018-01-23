@@ -8,118 +8,156 @@
 // update. Deleting the comments indicating the section will prevent
 // it from being updated in the future.
 
-
 package org.usfirst.frc.team4930.robot;
+
+import org.usfirst.frc.team4930.robot.commands.AutonomousCommand;
+import org.usfirst.frc.team4930.robot.subsystems.LimitSwitch;
+import org.usfirst.frc.team4930.robot.subsystems.Motors;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.team4930.robot.commands.*;
-import org.usfirst.frc.team4930.robot.subsystems.*;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
 
 /**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the TimedRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the build.properties file in 
- * the project.
+ * The VM is configured to automatically run this class, and to call the functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the name of this class or
+ * the package after creating this project, you must also update the build.properties file in the
+ * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends TimedRobot
+{
 
-    Command autonomousCommand;
-    SendableChooser<Command> chooser = new SendableChooser<>();
+  Command autonomousCommand;
+  SendableChooser<Command> chooser = new SendableChooser<>();
 
-    public static OI oi;
-    public static Motors motors;
+  public static OI oi;
+  public static Motors motors;
+  public static LimitSwitch lSwitch;
 
+  public static double positionGoal;
+  public static double velocityGoal;
 
-    /**
-     * This function is run when the robot is first started up and should be
-     * used for any initialization code.
-     */
-    @Override
-    public void robotInit() {
-        RobotMap.init();
-        motors = new Motors();
+  /**
+   * This function is run when the robot is first started up and should be used for any
+   * initialization code.
+   */
+  @Override
+  public void robotInit() {
+    RobotMap.init();
+    motors = new Motors();
 
-        // OI must be constructed after subsystems. If the OI creates Commands
-        //(which it very likely will), subsystems are not guaranteed to be
-        // constructed yet. Thus, their requires() statements may grab null
-        // pointers. Bad news. Don't move it.
-        oi = new OI();
+    // OI must be constructed after subsystems. If the OI creates Commands
+    // (which it very likely will), subsystems are not guaranteed to be
+    // constructed yet. Thus, their requires() statements may grab null
+    // pointers. Bad news. Don't move it.
+    oi = new OI();
 
-        // Add commands to Autonomous Sendable Chooser
+    // Add commands to Autonomous Sendable Chooser
 
-        chooser.addDefault("Autonomous Command", new AutonomousCommand());
+    chooser.addDefault("Autonomous Command", new AutonomousCommand());
 
-        SmartDashboard.putData("Auto mode", chooser);
+    SmartDashboard.putData("Auto mode", chooser);
+  }
+
+  /**
+   * This function is called when the disabled button is hit. You can use it to reset subsystems
+   * before shutting down.
+   */
+  @Override
+  public void disabledInit() {
+
+  }
+
+  @Override
+  public void disabledPeriodic() {
+    Scheduler.getInstance().run();
+  }
+
+  @Override
+  public void autonomousInit() {
+    autonomousCommand = chooser.getSelected();
+    // schedule the autonomous command (example)
+    if (autonomousCommand != null)
+      autonomousCommand.start();
+  }
+
+  /**
+   * This function is called periodically during autonomous
+   */
+  @Override
+  public void autonomousPeriodic() {
+    Scheduler.getInstance().run();
+  }
+
+  @Override
+  public void teleopInit() {
+    // This makes sure that the autonomous stops running when
+    // teleop starts running. If you want the autonomous to
+    // continue until interrupted by another command, remove
+    // this line or comment it out.
+    if (autonomousCommand != null)
+      autonomousCommand.cancel();
+  }
+
+  /**
+   * This function is called periodically during operator control
+   */
+  @Override
+  public void teleopPeriodic() {
+    Scheduler.getInstance().run();
+
+    SmartDashboard.putNumber("Encoder Position: ",
+        RobotMap.talonMaster.getSelectedSensorPosition(0));
+    SmartDashboard.putNumber("Encoder Velocity: ",
+        RobotMap.talonMaster.getSelectedSensorVelocity(0));
+
+    SmartDashboard.putString("Talon Control Mode: ",
+        RobotMap.talonMaster.getControlMode().toString());
+    SmartDashboard.putString("Victor Control Mode: ",
+        RobotMap.victorSlave.getControlMode().toString());
+
+    if (RobotMap.talonMaster.getControlMode() != ControlMode.PercentOutput) {
+      SmartDashboard.putNumber("PID Error: ", RobotMap.talonMaster.getClosedLoopError(0));
     }
 
-    /**
-     * This function is called when the disabled button is hit.
-     * You can use it to reset subsystems before shutting down.
-     */
-    @Override
-    public void disabledInit(){
+    SmartDashboard.putNumber("Joystick0 Y: ", Robot.oi.getJoystick0().getY());
 
+    positionGoal = SmartDashboard.getNumber("Set Position Goal:  ", 0.0);
+    velocityGoal = SmartDashboard.getNumber("Set Velocity Goal:  ", 0.0);
+    // use these to put the fields back onto the dashboard
+    SmartDashboard.putNumber("Set Position Goal:  ", positionGoal);
+    SmartDashboard.putNumber("Set Velocity Goal:  ", velocityGoal);
+
+    SmartDashboard.putNumber("Position Goal:  ", positionGoal);
+    SmartDashboard.putNumber("Velocity Goal:  ", velocityGoal);
+
+    SmartDashboard.putNumber("Talon Motor Voltage:  ",
+        RobotMap.talonMaster.getMotorOutputVoltage());
+    SmartDashboard.putNumber("Victor Motor Voltage:  ",
+        RobotMap.victorSlave.getMotorOutputVoltage());
+    SmartDashboard.putNumber("Voltage Difference:  ", RobotMap.talonMaster.getMotorOutputVoltage()
+        - RobotMap.victorSlave.getMotorOutputVoltage());
+    double diff =
+        RobotMap.talonMaster.getMotorOutputVoltage() - RobotMap.victorSlave.getMotorOutputVoltage();
+    if (diff > 0) {
+      SmartDashboard.putString("Higher Voltage:  ", "Talon");
+    } else if (diff < 0) {
+      SmartDashboard.putString("Higher Voltage:  ", "Victor");
+    } else {
+      SmartDashboard.putString("Higher Voltage:  ", "Equal");
     }
 
-    @Override
-    public void disabledPeriodic() {
-        Scheduler.getInstance().run();
-    }
+    SmartDashboard.putBoolean("Limit Switch:  ", RobotMap.limitSwitch.get());
+    SmartDashboard.putNumber("Pot:  ", RobotMap.pot.get());
 
-    @Override
-    public void autonomousInit() {
-        autonomousCommand = chooser.getSelected();
-        // schedule the autonomous command (example)
-        if (autonomousCommand != null) autonomousCommand.start();
+    SmartDashboard.putBoolean("Limit Switch:  ", RobotMap.limitSwitch.get());
+    SmartDashboard.putNumber("Pot:  ", RobotMap.pot.get());
+    if (!RobotMap.limitSwitch.get()) {
+      RobotMap.talonMaster.setSelectedSensorPosition(0, 0, 0);
     }
-
-    /**
-     * This function is called periodically during autonomous
-     */
-    @Override
-    public void autonomousPeriodic() {
-        Scheduler.getInstance().run();
-    }
-
-    @Override
-    public void teleopInit() {
-        // This makes sure that the autonomous stops running when
-        // teleop starts running. If you want the autonomous to
-        // continue until interrupted by another command, remove
-        // this line or comment it out.
-        if (autonomousCommand != null) autonomousCommand.cancel();
-    }
-
-    /**
-     * This function is called periodically during operator control
-     */
-    @Override
-    public void teleopPeriodic() {
-        Scheduler.getInstance().run();
-        
-        SmartDashboard.putNumber("Encoder Position: ", RobotMap.talonMaster.getSelectedSensorPosition(0));
-        SmartDashboard.putNumber("Encoder Velocity: ", RobotMap.talonMaster.getSelectedSensorVelocity(0));
-        SmartDashboard.putString("Talon Control Mode: ", RobotMap.talonMaster.getControlMode().toString());
-//        if(RobotMap.talonMaster.getControlMode() != ControlMode.PercentOutput) {
-            SmartDashboard.putNumber("Closed-Loop Error: ", RobotMap.talonMaster.getClosedLoopError(0));
-//            SmartDashboard.putNumber("Closed-Loop Target: ", RobotMap.talonMaster.getClosedLoopTarget(0));
-//        }
-        SmartDashboard.putString("Victor Control Mode: ", RobotMap.victorSlave.getControlMode().toString());
-//        SmartDashboard.putBoolean("Talon isAlive: ", RobotMap.talonMaster.isAlive());
-//        SmartDashboard.putBoolean("Victor isAlive: ", RobotMap.victorSlave.isAlive());
-        SmartDashboard.putNumber("Joystick0 Y: ", Robot.oi.getJoystick0().getY());
-        SmartDashboard.putNumber("Victor Error: ", RobotMap.victorSlave.getClosedLoopError(0));
-        
-        System.out.println("Position: " + RobotMap.talonMaster.getSelectedSensorPosition(0));
-//        SmartDashboard.putNumber("Other encoder: ", RobotMap.quadEncoder.get());
-//        SmartDashboard.putBoolean("Encoder is stopped: ", RobotMap.quadEncoder.getStopped());
-    }
+  }
 }

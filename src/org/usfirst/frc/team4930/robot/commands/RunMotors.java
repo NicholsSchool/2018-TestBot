@@ -26,6 +26,8 @@ public class RunMotors extends Command {
     // Called just before this Command runs the first time
     @Override
     protected void initialize() {
+    	Robot.motors.set(0.0);
+    	Robot.motors.resetEncoder();
     }
 
     // Called repeatedly when this Command is scheduled to run

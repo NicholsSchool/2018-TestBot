@@ -12,11 +12,9 @@
 package org.usfirst.frc.team4930.robot;
 
 import org.usfirst.frc.team4930.robot.commands.*;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
-import org.usfirst.frc.team4930.robot.subsystems.*;
 
 
 /**
@@ -80,7 +78,6 @@ public class OI {
         joystick0button4.whenPressed(new StartVelocityLoop(0.0));
         
         joystick0button5.whenPressed(new StartPositionLoop(10000.0));
-        
         joystick0button6.whenPressed(new StartPositionLoop(0.0));
         
 
